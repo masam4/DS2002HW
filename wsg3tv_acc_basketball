@@ -1,0 +1,72 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Task 1: Reading CSV File
+
+df = pd.read_csv('C:/Users/masam/Downloads/DS2002F24-main/DS2002F24-main/HW/acc_players-2324F.csv', header=1) 
+# print(df.head())
+# print(df.columns)
+
+# Task 2: Basic Analysis
+
+total_points = df['PTS'].sum() 
+print(f'Total Points: {total_points}')
+
+highest_minutes_player = df.loc[df['MP'].idxmax()]
+print(f'Most Minutes Player: {highest_minutes_player}')
+
+top_5_rebounders = df.nlargest(5, 'TRB')[['Player', 'TRB']]
+print(f'Top 5 Rebounders: {top_5_rebounders}')
+
+# Task 3: Basic Filtering
+
+filtered_df = df[df['MP'] > 500] # only played more than 500 minutes
+
+highest_total_assists = filtered_df.loc[filtered_df['AST'].idxmax()]
+print(f'Highest Assists Player: {highest_total_assists}')
+
+top_3_assist_leads = df.nlargest(3, 'AST')[['Player', 'AST']]
+print(f'Top 3 Assisters: {top_3_assist_leads}')
+
+top_3_shot_blockers = df.nlargest(3, 'BLK')[['Player', 'BLK']]
+print(f'Top 3 Blockers: {top_3_shot_blockers}')
+
+# Task 4: School-Based Analysis
+
+points_by_school = df.groupby('School')['PTS'].sum()
+print(f'School-Grouped Points: {points_by_school}')
+
+assists_by_school = df.groupby('School')['AST'].sum()
+print(f'School-Grouped Assists: {assists_by_school}')
+
+top_schools_by_points = points_by_school.nlargest(3)
+print(f'Top 3 Schools: {top_schools_by_points}')
+
+# Task 5: Extra Credit
+
+highest_points = df.nlargest(5, 'PTS')[['Player', 'PTS']]
+highest_points.plot(kind='bar', x='Player', y='PTS', ylabel='Points', legend=False, title='Top 5 Players by Points')
+plt.show()
+
+df.plot.scatter(x='FG%', y='WS', xlabel= 'Field Goal Percentage', ylabel='Win Share', title='Correlation Between Field Goal Percentage and Win Share')
+plt.show()
+correlation = df['FG%'].corr(df['WS'])
+print(f'Correlation Coefficient between FG% and WS: {correlation}')
+
+# Task 6: Reflection
+
+# I learned how to load csv files into data frames and retrieve data from them using pandas and other operations.
+# I strengthened my understanding of different operations, such as finding maximum or minimum values to determine various fields with top players or schools. 
+# With the grouping functionality, I also learned how to group certain players together to analyze the statistics per school. 
+# This was really interesting to see since it allowed us to create insights into the backgrounds of certain players and which tend to do the best or worst for instance. 
+# Some other operations I polished where using techniques such as loc[] and nlargest() to filter the dataset into specific components we wanted to narrow down to. 
+# All of these techniques could be used in various real-world datasets such as within fields of healthcare, finance, business, and anything that involves data.
+
+# One challenging aspect of the assignment was the very introduction, which I faced a problem when reading the data frame. 
+# The columns were not displaying as I expected them to, and my solution was to add a parameter for "header=1" after my csv path. 
+# It seemed simple but was an effective tweak to correctly read the column names which will be useful to keep in mind whenever I come across data formatting that might not always be perfect. 
+# It is always important to read the headers and columns to see how the data is structured before diving into analysis.
+
+# The insights I gained from analyzing these basketball statistics can be translated into many other datasets such as customer demographics, marketing sales, hospital patient records, school grades, and many more. 
+# All the techniques such as finding max/min, filtering, grouping, and visualizing trends can be used to discover patterns and make decisions based in data. For example, a company could use the max/min information to determine best-selling products to maximize their profits by focusing their resources around that, and divest or move out of markets that are not doing as well. 
+# Overall, this assignment helped me practice certain aspects of retrieving and analyzing data and using various techniques and operations to further inspect any patterns and visuals for proceeding with a decision, and this is applicable in many fields.

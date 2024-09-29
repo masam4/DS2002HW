@@ -1,0 +1,64 @@
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def fetch_stock_data(symbol, headers):
+    url = "https://yfapi.net/v6/finance/quote"
+    response = requests.get(url, headers=headers, params={"symbols": symbol})
+    return response.json().get('quoteResponse', {}).get('result', [])
+
+def fetch_historical_data(symbol, headers):
+    url = "https://yfapi.net/v8/finance/spark"
+    response = requests.get(url, headers=headers, params={"symbols": symbol, "range": "5d", "interval": "1d"})
+    return response.json().get(symbol, {})
+
+# plot historical data from last 5 days
+def plot_historical_data(dates, prices, stock_name, ticker_name):
+    plt.figure(figsize=(10, 6))
+    plt.plot(dates, prices, marker='o', linestyle='-', color='m', label=f"{stock_name} High Prices")
+    plt.title(f"{stock_name} ({ticker_name}) - Last 5 Days High Prices")
+    plt.xlabel('Date')
+    plt.ylabel('High Price')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def main():
+    stock_symbol = input("Enter stock ticker symbol (e.g., AAPL): ").upper()
+    api_key = "apikey"
+    headers = {'x-api-key': api_key}
+
+    stock_data = fetch_stock_data(stock_symbol, headers)
+    if not stock_data:
+        print("No stock data found or an error occurred.")
+        return
+
+    stock_list = []
+    for stock in stock_data:
+        stock_info = {
+            "Ticker Name": stock.get("symbol", "N/A"),
+            "Stock Name": stock.get("longName", "N/A"),
+            "Current Market Price": stock.get("regularMarketPrice", "N/A"),
+            "Target Mean Price": stock.get("targetMeanPrice", "N/A"),
+            "52-Week High": stock.get("fiftyTwoWeekHigh", "N/A"),
+            "52-Week Low": stock.get("fiftyTwoWeekLow", "N/A")
+        }
+        
+        stock_list.append(stock_info)
+
+        for key, value in stock_info.items():
+            print(f"  {key.replace('_', ' ')}: {value}")
+
+        historical_data = fetch_historical_data(stock_info["Ticker Name"], headers)
+        
+        if "timestamp" in historical_data and "close" in historical_data:
+            dates = pd.to_datetime(historical_data["timestamp"], unit='s')
+            plot_historical_data(dates, historical_data["close"], stock_info["Stock Name"], stock_info["Ticker Name"])
+        else:
+            print(f"No data found for {stock_info['Ticker Name']}")
+
+    pd.DataFrame(stock_list).to_csv("stock_data.csv", index=False)
+    print("\nStock data saved to 'stock_data.csv'")
+
+if __name__ == "__main__":
+    main()

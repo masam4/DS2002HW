@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import pprint
 
-connection_string = "mongodb+srv://masatest2:testingthisnewpassword@cluster0.wflhw.mongodb.net/sample_mflix?authSource=admin&retryWrites=true&w=majority"
+connection_string = "mongodb+srv://masatest2:{password}@cluster0.wflhw.mongodb.net/sample_mflix?authSource=admin&retryWrites=true&w=majority"
 client = MongoClient(connection_string)
 
 db = client['sample_mflix']
